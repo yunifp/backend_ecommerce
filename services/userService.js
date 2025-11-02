@@ -1,6 +1,7 @@
 // services/userService.js
 const userRepository = require("../repositories/userRepository");
 const bcrypt = require("bcryptjs");
+const { Op } = require("sequelize");
 // 1. KITA BUTUH INI LAGI
 const authService = require("./authService");
 
@@ -56,8 +57,21 @@ class UserService {
   }
 
   // ... (Fungsi getAllUsers, getUserById, updateUser, deleteUser tetap sama) ...
-  async getAllUsers() {
-    return await userRepository.getAllUsers();
+  async getAdminAndStaff() {
+    return await userRepository.getAllUsers({
+      where: {
+        role: {
+          [Op.in]: ["admin", "staff"], // Ambil yg rolenya 'admin' ATAU 'staff'
+        },
+      },
+    });
+  }
+  async getCustomers() {
+    return await userRepository.getAllUsers({
+      where: {
+        role: "customer", // Ambil yg rolenya 'customer'
+      },
+    });
   }
 
   async getUserById(id) {

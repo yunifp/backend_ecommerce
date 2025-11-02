@@ -1,6 +1,7 @@
 // services/voucherService.js
 const voucherRepo = require("../repositories/voucherRepository");
 const { Op } = require("sequelize");
+const { Vouchers } = require("../models"); 
 
 class VoucherService {
   async createVoucher(data) {

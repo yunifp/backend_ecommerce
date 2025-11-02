@@ -8,7 +8,24 @@ const excludePassword = {
 
 class UserRepository {
   // ... (fungsi createUser, getAllUsers, dll) ...
+  async getAllUsers(options = {}) {
+    // Gabungkan 'options' (cth: 'where' clause)
+    // dengan 'excludePassword'
+    const queryOptions = {
+      ...options,
+      ...excludePassword,
+    };
 
+    // Jika 'options' punya 'where', gabungkan dengan benar
+    if (options.where) {
+      queryOptions.where = { ...options.where, ...excludePassword.where };
+    }
+
+    return await User.findAll(queryOptions);
+  }
+  async getUserById(id) {
+    return await User.findByPk(id, excludePassword);
+  }
   async getUserByEmail(email, includePassword = false) {
     // Tentukan opsi query
     const options = { where: { email } };
@@ -23,8 +40,17 @@ class UserRepository {
 
     return await User.findOne(options);
   }
-
-  // ... (fungsi updateUser, deleteUser, dll) ...
+  async updateUser(id, userData) {
+    await User.update(userData, {
+      where: { id },
+    });
+    return await this.getUserById(id); // Kembalikan data yg sudah diupdate
+  }
+  async deleteUser(id) {
+    return await User.destroy({
+      where: { id },
+    });
+  }
 }
 
 module.exports = new UserRepository();

@@ -16,7 +16,24 @@ class UserController {
       res.error(error.message, 400);
     }
   }
+  async getAdminStaff(req, res) {
+    try {
+      const users = await userService.getAdminAndStaff();
+      res.success(users, "Admin and Staff users retrieved");
+    } catch (error) {
+      res.error(error.message, 500);
+    }
+  }
 
+  // --- TAMBAHKAN FUNGSI BARU 2 ---
+  async getCustomers(req, res) {
+    try {
+      const users = await userService.getCustomers();
+      res.success(users, "Customer users retrieved");
+    } catch (error) {
+      res.error(error.message, 500);
+    }
+  }
   // Read (One)
   async getUserById(req, res) {
     try {
@@ -26,7 +43,25 @@ class UserController {
       res.error(error.message, 404); // 404 Not Found
     }
   }
+  async getMe(req, res) {
+    try {
+      // 1. Ambil ID dari 'req.user' (yang diisi oleh middleware 'authenticate')
+      //    BUKAN dari 'req.params.id'
+      const userId = req.user.id;
 
+      // 2. Panggil service yang sudah ada
+      const user = await userService.getUserById(userId);
+
+      if (!user) {
+        // Ini jarang terjadi, tapi untuk jaga-jaga
+        return res.error("User not found from token", 404);
+      }
+
+      res.success(user, "Profile retrieved successfully");
+    } catch (error) {
+      res.error(error.message, 500);
+    }
+  }
   // Update
   async updateUser(req, res) {
     try {
